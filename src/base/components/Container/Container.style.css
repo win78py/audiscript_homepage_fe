@@ -1,0 +1,42 @@
+.main-app-container {
+  width: 100%;
+  margin: 0 auto;
+  max-width: var(--container-xs);
+}
+
+/* Media query value should match with defined root value */
+@media (min-width: 576px) {
+  .main-app-container {
+    max-width: var(--container-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .main-app-container {
+    max-width: var(--container-xs);
+  }
+}
+
+@media (min-width: 481px) {
+  .main-app-container {
+    max-width: var(--container-sm);
+  }
+}
+
+@media (min-width: 769px) {
+  .main-app-container {
+    max-width: var(--container-sm);
+  }
+}
+
+@media (min-width: 1025px) {
+  .main-app-container {
+    max-width: var(--container-lg);
+  }
+}
+
+@media (min-width: 1441px) {
+  .main-app-container {
+    max-width: var(--container-lg);
+  }
+}
