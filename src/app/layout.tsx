@@ -1,25 +1,29 @@
-import type { Metadata } from 'next';
-import { AntdRegistry } from '@ant-design/nextjs-registry';
-import { mainLayoutAntdConfig } from '@/base/configs/antdConfig';
-import './globals.css';
-import { ConfigProvider } from 'antd';
-import MainLayout from './components/MainLayout';
-import { typoConfig } from '@/base/configs/typographyConfig';
+import type { Metadata } from "next";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { mainLayoutAntdConfig } from "@/base/configs/antdConfig";
+import "./globals.css";
+import { ConfigProvider } from "antd";
+import MainLayout from "./components/MainLayout";
+import { typoConfig } from "@/base/configs/typographyConfig";
 
 export const metadata: Metadata = {
-  title: 'Audiscript Web',
-  description: 'Audio to text converter'
+  title: "Audiscript Web",
+  description: "Audio to text converter",
 };
 
 export default function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
     <html lang="ko">
       <head>
-        <link rel="icon" href="/images/Web-favicon.webp" type="image/x-icon" />
+        <link
+          rel="icon"
+          type="image/svg+xml"
+          href="https://res.cloudinary.com/dekmn1kko/image/upload/v1726824769/artall_icon.png"
+        />
       </head>
       <body>
         <style>{typoConfig}</style>
@@ -42,7 +46,7 @@ export default function RootLayout({
                 });
                 observer.observe(document.body, { childList: true, subtree: true });
               }
-            `
+            `,
           }}
         />
         <script
