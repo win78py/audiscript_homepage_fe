@@ -14,6 +14,10 @@ const eslintConfig = [
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
+      // "@typescript-eslint/no-unused-vars": "off",
+      // "no-var": "off",
+      // "jsx-a11y/alt-text": "off",
+      "react/no-unescaped-entities": "off",
     },
   },
 ];

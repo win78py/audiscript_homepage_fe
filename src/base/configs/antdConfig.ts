@@ -1,4 +1,4 @@
-import { FormProps, InputNumberProps, message, ThemeConfig } from 'antd';
+import { FormProps, InputNumberProps, ThemeConfig } from 'antd';
 
 export const getCSSVariable = (variable: string): number | false => {
   if (typeof window !== 'undefined') {
