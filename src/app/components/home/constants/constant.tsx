@@ -1,4 +1,5 @@
-const GO_SERVER_BASE_URL = process.env.GO_SERVER_BASE_URL;
+'use client'
+const BASE_URL = process.env.NEXT_PUBLIC_GO_BASE_URL;
 
 export const API_URL = {
 	AUDIO: `${BASE_URL}/audio`,
