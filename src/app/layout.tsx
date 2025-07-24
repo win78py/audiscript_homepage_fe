@@ -22,7 +22,7 @@ export default function RootLayout({
         <link
           rel="icon"
           type="image/svg+xml"
-          href="https://res.cloudinary.com/dj2krdujc/image/upload/v1753342134/artall-blue-logo.png"
+          href="https://res.cloudinary.com/dekmn1kko/image/upload/v1726824769/artall_icon.png"
         />
       </head>
       <body>
