@@ -7,7 +7,7 @@ import MainLayout from "./components/MainLayout";
 import { typoConfig } from "@/base/configs/typographyConfig";
 
 export const metadata: Metadata = {
-  title: "Audiscript Web",
+  title: "Audiscript",
   description: "Audio to text converter",
 };
 
