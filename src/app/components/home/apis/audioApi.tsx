@@ -24,7 +24,7 @@ export const postAudioAPI = (params: postParams) => {
       headers: {
         "Content-Type": "multipart/form-data",
       },
-	  timeout: 999999,
+	  timeout: 9999999,
     });
     return response;
   } catch (error) {

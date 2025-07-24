@@ -17,6 +17,7 @@ export const useGetAudioDetail = (id: string) => {
 			const { data } = await getAudioDetailAPI(id);
 			return data;
 		},
+    enabled: !!id,
 	});
 };
 

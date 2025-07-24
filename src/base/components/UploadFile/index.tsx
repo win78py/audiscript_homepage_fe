@@ -13,6 +13,7 @@ import { useCreateAudio } from "@/app/components/home/hooks/useCreateAudio";
 import DeleteIcon from "@/base/icons/DeleteIcon";
 import { useRouter } from "next/navigation";
 import CheckCircleIcon from "@/base/icons/CheckCircleIcon";
+import TranscriptionModal from "@/app/components/TransriptionModal";
 
 interface UploadAudioProps {
   onAudioSelected: (files: File[]) => void;
@@ -27,15 +28,17 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
 }) => {
   const router = useRouter();
   const [fileList, setFileList] = useState<AntdUploadFile[]>([]);
-  const [audioId, setAudioId] = useState<string | null>(null);
+  const [dataAudio, setDataAudio] = useState<string | null>(null);
   const { mutate, isPending, isSuccess } = useCreateAudio({
     onSuccess: (data) => {
-      setAudioId(data.data.id);
+      setDataAudio(data.data);
     },
   });
   const [progressPercent, setProgressPercent] = useState(0);
   const [progressRunning, setProgressRunning] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [isOpen, setIsOpen] = React.useState(isSuccess);
+
   React.useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
@@ -104,6 +107,11 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
 
     mutate({ file_url: files });
   };
+
+  const handleOpenTranscriptionModal = () => {
+    if (!isSuccess) return;
+    setIsOpen(true);
+  }
 
   return (
     <Flex vertical gap={8}>
@@ -298,11 +306,9 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
                           padding: "0 32px",
                           fontWeight: 600,
                         }}
-                        onClick={() =>
-                          router.push(`/transcriptions?id=${audioId}`)
-                        }
+                        onClick={() => handleOpenTranscriptionModal()}
                       >
-                        Transcribe
+                        View Transcription
                       </Button>
                     </div>
                   )}
@@ -312,6 +318,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
           )}
         </Upload.Dragger>
       </div>
+      <TranscriptionModal isOpen={isOpen} onClose={() => setIsOpen(false)} data={dataAudio} />
     </Flex>
   );
 };
