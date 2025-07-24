@@ -18,6 +18,7 @@ const eslintConfig = [
       // "no-var": "off",
       // "jsx-a11y/alt-text": "off",
       "react/no-unescaped-entities": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
     },
   },
 ];

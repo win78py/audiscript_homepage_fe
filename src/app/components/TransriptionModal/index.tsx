@@ -1,7 +1,6 @@
 "use client";
 
-import { Flex, Modal, Typography } from "antd";
-import { useSearchParams } from "next/navigation";
+import { Flex, Typography } from "antd";
 import { useGetAudioDetail } from "../home/hooks/useCreateAudio";
 import BaseModal from "@/base/components/BaseModal";
 
@@ -24,8 +23,15 @@ export default function TranscriptionModal(props: UploadAudioProps) {
       }}
       width={800}
     >
-      <Flex vertical style={{ width: "100%", height: "100%", gap: 20 }}>
-        <Typography className="body-lg" style={{ padding: "20px 20px 0 20px" }}>
+      <Flex vertical style={{ width: "100%", gap: 20 }}>
+        <Typography
+          className="body-lg"
+          style={{
+            padding: "20px 20px 0 20px",
+            maxHeight: 340,
+            overflowY: "auto",
+          }}
+        >
           {isLoading ? "Loading..." : transcriptions?.transcript}
         </Typography>
         <Flex vertical style={{ padding: "0 20px 20px 20px" }}>

@@ -11,9 +11,9 @@ import UploadArrowIcon from "@/base/icons/UploadArrowIcon";
 import FileIcon from "@/base/icons/FileIcon";
 import { useCreateAudio } from "@/app/components/home/hooks/useCreateAudio";
 import DeleteIcon from "@/base/icons/DeleteIcon";
-import { useRouter } from "next/navigation";
 import CheckCircleIcon from "@/base/icons/CheckCircleIcon";
 import TranscriptionModal from "@/app/components/TransriptionModal";
+import useToast from "@/base/hooks/useToast";
 
 interface UploadAudioProps {
   onAudioSelected: (files: File[]) => void;
@@ -26,12 +26,23 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
   uploadKey,
   style,
 }) => {
-  const router = useRouter();
+  const showToast = useToast(); 
   const [fileList, setFileList] = useState<AntdUploadFile[]>([]);
   const [dataAudio, setDataAudio] = useState<string | null>(null);
   const { mutate, isPending, isSuccess } = useCreateAudio({
     onSuccess: (data) => {
       setDataAudio(data.data);
+      showToast({
+        content: "Upload successful! Click to transcribe.",
+        type: "success",
+      });
+    },
+    onError: (error) => {
+      console.log("Mutation error:", error);
+      showToast({
+        content: "Upload failed. Please try again.",
+        type: "error",
+      });
     },
   });
   const [progressPercent, setProgressPercent] = useState(0);
@@ -87,6 +98,8 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
       alert("Audio file must be smaller than 10MB");
       return Upload.LIST_IGNORE;
     }
+
+
 
     return false;
   };
@@ -324,3 +337,4 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
 };
 
 export default UploadAudio;
+

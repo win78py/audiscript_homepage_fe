@@ -5,8 +5,8 @@ import { Modal, ModalProps, Typography } from 'antd';
 import IconX from '@/base/icons/XIcon';
 
 
-const HeaderModalHeight = 26;
-const FooterModalHeight = 32;
+// const HeaderModalHeight = 26;
+// const FooterModalHeight = 32;
 
 type BaseModalProps = {
   modalTitle?: string | JSX.Element;
@@ -30,7 +30,7 @@ const BaseModal = (props: BaseModalProps) => {
     children,
     open = false,
     onClose,
-    onOk,
+    // onOk,
     width = 686,
     height,
     modalProps,
@@ -65,7 +65,7 @@ const BaseModal = (props: BaseModalProps) => {
     } else {
       return <></>;
     }
-  }, [modalTitle]);
+  }, [modalTitle, header, onClose]);
 
   return (
     <Modal
