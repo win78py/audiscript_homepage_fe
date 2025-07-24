@@ -9,11 +9,11 @@ import {
 import Button from "@/base/components/Button/CustomButton";
 import UploadArrowIcon from "@/base/icons/UploadArrowIcon";
 import FileIcon from "@/base/icons/FileIcon";
-import { useCreateAudio } from "@/app/components/home/hooks/useCreateAudio";
 import DeleteIcon from "@/base/icons/DeleteIcon";
 import CheckCircleIcon from "@/base/icons/CheckCircleIcon";
 import TranscriptionModal from "@/app/components/TransriptionModal";
 import useToast from "@/base/hooks/useToast";
+import { useAudioMutation } from "@/app/components/home/hooks/useAudioMutation";
 
 interface UploadAudioProps {
   onAudioSelected: (files: File[]) => void;
@@ -22,38 +22,37 @@ interface UploadAudioProps {
 }
 
 const UploadAudio: React.FC<UploadAudioProps> = ({
-  onAudioSelected,
   uploadKey,
   style,
 }) => {
-  const showToast = useToast(); 
-  const [fileList, setFileList] = useState<AntdUploadFile[]>([]);
-  const [dataAudio, setDataAudio] = useState<string | null>(null);
-  const { mutate, isPending, isSuccess } = useCreateAudio({
-    onSuccess: (data) => {
-      setDataAudio(data.data);
-      showToast({
-        content: "Upload successful! Click to transcribe.",
-        type: "success",
-      });
-    },
-    onError: (error) => {
-      console.log("Mutation error:", error);
-      showToast({
-        content: "Upload failed. Please try again.",
-        type: "error",
-      });
-    },
-  });
+  const showToast = useToast();
+  const [file, setFile] = useState<AntdUploadFile>();
+  // const { mutate, isPending, isSuccess } = useCreateAudio({
+  //   onSuccess: (data) => {
+  //     setDataAudio(data.data);
+  //     showToast({
+  //       content: "Upload successful! Click to transcribe.",
+  //       type: "success",
+  //     });
+  //   },
+  //   onError: (error) => {
+  //     console.log("Mutation error:", error);
+  //     showToast({
+  //       content: "Upload failed. Please try again.",
+  //       type: "error",
+  //     });
+  //   },
+  // });
+  const { mCreateAudio } = useAudioMutation();
   const [progressPercent, setProgressPercent] = useState(0);
   const [progressRunning, setProgressRunning] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
-  const [isOpen, setIsOpen] = React.useState(isSuccess);
+  const [isOpen, setIsOpen] = React.useState(mCreateAudio?.isSuccess);
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
-    if (isPending) {
+    if (mCreateAudio?.isPending) {
       setProgressRunning(true);
       setProgressPercent(0);
       interval = setInterval(() => {
@@ -64,7 +63,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
       }, 20);
     }
 
-    if (isSuccess) {
+    if (mCreateAudio?.isSuccess) {
       if (interval) clearInterval(interval);
       setProgressPercent(100);
       setTimeout(() => {
@@ -77,7 +76,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isPending, isSuccess]);
+  }, [mCreateAudio?.isPending, mCreateAudio?.isSuccess]);
   const beforeUpload = async (file: RcFile) => {
     const isLt10M = file.size / 1024 / 1024 <= 10;
     const allowedTypes = [
@@ -99,32 +98,49 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
       return Upload.LIST_IGNORE;
     }
 
-
-
     return false;
   };
 
   const handleChange = (info: UploadChangeParam<AntdUploadFile<any>>) => {
-    setProgressRunning(true);
-    setProgressPercent(0);
-    setIsComplete(false);
-    const filtered = info.fileList.filter((file) => !!file.originFileObj);
+  setProgressRunning(true);
+  setProgressPercent(0);
+  setIsComplete(false);
 
-    const newFileList = filtered.slice(0, 1);
+  const firstFile = info.fileList.find((file) => !!file.originFileObj);
+  if (!firstFile) {
+    setFile(undefined);
+    return;
+  }
+  setFile(firstFile);
 
-    setFileList(newFileList);
-    const files = newFileList
-      .map((file) => file.originFileObj)
-      .filter((f): f is RcFile => !!f);
-    onAudioSelected?.(files);
+  const file = firstFile.originFileObj as RcFile;
 
-    mutate({ file_url: files });
-  };
+  // Tạo FormData
+  const formData = new FormData();
+  formData.append("file_url", file);
+
+
+  // Gọi mutation và truyền option isFormData: true
+  mCreateAudio.mutate(formData, {
+    onSuccess: () => {
+      showToast({
+        content: "Upload successful! Click to transcribe.",
+        type: "success",
+      });
+    },
+    onError: () => {
+      showToast({
+        content: "Upload failed. Please try again.",
+        type: "error",
+      });
+    },
+  });
+};
 
   const handleOpenTranscriptionModal = () => {
-    if (!isSuccess) return;
+    if (!mCreateAudio?.isSuccess) return;
     setIsOpen(true);
-  }
+  };
 
   return (
     <Flex vertical gap={8}>
@@ -141,7 +157,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
         <Upload.Dragger
           key={uploadKey}
           name="audio"
-          fileList={fileList}
+          fileList={file ? [file] : []}
           accept=".mp3,.wav,.m4a"
           showUploadList={false}
           beforeUpload={beforeUpload}
@@ -153,10 +169,10 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
             padding: 16,
             borderRadius: 20,
             position: "relative",
-            pointerEvents: fileList.length > 0 ? "none" : "auto",
+            pointerEvents: file ? "none" : "auto",
           }}
         >
-          {fileList.length === 0 ? (
+          {!file ? (
             <Flex
               vertical
               align="middle"
@@ -198,143 +214,137 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
               </div>
             </Flex>
           ) : (
-            fileList.map((file) => {
-              const sizeMB = (file.size || 0) / 1024 / 1024;
-              return (
-                <Flex
-                  vertical
-                  key={file.uid}
-                  align="center"
-                  justify="space-between"
+            <Flex
+              vertical
+              key={file.uid}
+              align="center"
+              justify="space-between"
+              style={{
+                width: "100%",
+                background: "#fefdfb",
+                padding: 16,
+                borderRadius: 20,
+                border: "1px solid #f1eee9",
+              }}
+            >
+              <Flex
+                style={{
+                  width: "100%",
+                  padding: 16,
+                  background: "#f2eedc4d",
+                  borderRadius: 16,
+                }}
+                gap={12}
+              >
+                <Flex align="center" gap={12} style={{ width: "100%" }}>
+                  <div
+                    style={{
+                      background: isComplete
+                        ? "var(--green-correct, #0dbb84)"
+                        : "#f2eedc",
+                      borderRadius: 12,
+                      padding: 16,
+                      color: isComplete ? "#fff" : "#000",
+                      transition: "background 0.4s",
+                    }}
+                  >
+                    <FileIcon
+                      width={24}
+                      height={24}
+                      style={{
+                        display: isComplete ? "none" : "flex",
+                        transform: isComplete
+                          ? "scale(0.8) rotate(-10deg)"
+                          : "scale(1) rotate(0deg)",
+                        transition: "transform 0.4s",
+                      }}
+                    />
+                    <CheckCircleIcon
+                      width={24}
+                      height={24}
+                      style={{
+                        display: isComplete ? "flex" : "none",
+                        transform: isComplete
+                          ? "scale(1) rotate(0deg)"
+                          : "scale(0.8) rotate(10deg)",
+                        transition: "transform 0.4s",
+                      }}
+                    />
+                  </div>
+                  <Flex vertical style={{ alignItems: "start", gap: 6 }}>
+                    <Typography.Text strong>{file.name}</Typography.Text>
+                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                      {((file.size || 0) / 1024 / 1024).toFixed(1)} MB
+                    </Typography.Text>
+                  </Flex>
+                </Flex>
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFile(undefined);
+                  }}
                   style={{
-                    width: "100%",
-                    background: "#fefdfb",
-                    padding: 16,
-                    borderRadius: 20,
-                    border: "1px solid #f1eee9",
+                    border: "1px solid #cdcdcdff",
+                    cursor: "pointer",
+                    padding: "14px 16px",
+                    borderRadius: 12,
+                    background: "#fff",
+                    pointerEvents: "auto",
                   }}
                 >
-                  <Flex
+                  <DeleteIcon width={24} height={25.5} />
+                </div>
+              </Flex>
+              {progressRunning && (
+                <Progress
+                  percent={progressPercent}
+                  status="active"
+                  showInfo={false}
+                  strokeColor="#1677ff"
+                  style={{ marginTop: 16 }}
+                />
+              )}
+
+              {mCreateAudio?.isSuccess && !progressRunning && (
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    marginTop: 24,
+                    pointerEvents: "auto",
+                  }}
+                >
+                  <Button
                     style={{
+                      background: "#1677ff",
+                      color: "#fff",
+                      borderRadius: 12,
+                      height: 48,
                       width: "100%",
-                      padding: 16,
-                      background: "#f2eedc4d",
-                      borderRadius: 16,
+                      padding: "0 32px",
+                      fontWeight: 600,
                     }}
-                    gap={12}
+                    onClick={() => handleOpenTranscriptionModal()}
                   >
-                    <Flex align="center" gap={12} style={{ width: "100%" }}>
-                      <div
-                        style={{
-                          background: isComplete
-                            ? "var(--green-correct, #0dbb84)"
-                            : "#f2eedc",
-                          borderRadius: 12,
-                          padding: 16,
-                          color: isComplete ? "#fff" : "#000",
-                          transition: "background 0.4s",
-                        }}
-                      >
-                        <FileIcon
-                          width={24}
-                          height={24}
-                          style={{
-                            display: isComplete ? "none" : "flex",
-                            transform: isComplete
-                              ? "scale(0.8) rotate(-10deg)"
-                              : "scale(1) rotate(0deg)",
-                            transition: "transform 0.4s",
-                          }}
-                        />
-                        <CheckCircleIcon
-                          width={24}
-                          height={24}
-                          style={{
-                            display: isComplete ? "flex" : "none",
-                            transform: isComplete
-                              ? "scale(1) rotate(0deg)"
-                              : "scale(0.8) rotate(10deg)",
-                            transition: "transform 0.4s",
-                          }}
-                        />
-                      </div>
-                      <Flex vertical style={{ alignItems: "start", gap: 6 }}>
-                        <Typography.Text strong>{file.name}</Typography.Text>
-                        <Typography.Text
-                          type="secondary"
-                          style={{ fontSize: 12 }}
-                        >
-                          {sizeMB.toFixed(1)} MB
-                        </Typography.Text>
-                      </Flex>
-                    </Flex>
-
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setFileList([]);
-                      }}
-                      style={{
-                        border: "1px solid #cdcdcdff",
-                        cursor: "pointer",
-                        padding: "14px 16px",
-                        borderRadius: 12,
-                        background: "#fff",
-                        pointerEvents: "auto",
-                      }}
-                    >
-                      <DeleteIcon width={24} height={25.5} />
-                    </div>
-                  </Flex>
-                  {progressRunning && (
-                    <Progress
-                      percent={progressPercent}
-                      status="active"
-                      showInfo={false}
-                      strokeColor="#1677ff"
-                      style={{ marginTop: 16 }}
-                    />
-                  )}
-
-                  {isSuccess && !progressRunning && (
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        justifyContent: "flex-end",
-                        marginTop: 24,
-                        pointerEvents: "auto",
-                      }}
-                    >
-                      <Button
-                        style={{
-                          background: "#1677ff",
-                          color: "#fff",
-                          borderRadius: 12,
-                          height: 48,
-                          width: "100%",
-                          padding: "0 32px",
-                          fontWeight: 600,
-                        }}
-                        onClick={() => handleOpenTranscriptionModal()}
-                      >
-                        View Transcription
-                      </Button>
-                    </div>
-                  )}
-                </Flex>
-              );
-            })
+                    View Transcription
+                  </Button>
+                </div>
+              )}
+            </Flex>
           )}
         </Upload.Dragger>
       </div>
-      <TranscriptionModal isOpen={isOpen} onClose={() => setIsOpen(false)} data={dataAudio} />
+      <TranscriptionModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        data={mCreateAudio?.data}
+      />
     </Flex>
   );
 };
 
 export default UploadAudio;
-

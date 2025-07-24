@@ -1,8 +1,9 @@
 "use client";
 
 import { Flex, Typography } from "antd";
-import { useGetAudioDetail } from "../home/hooks/useCreateAudio";
+// import { useGetAudioDetail } from "../home/hooks/useCreateAudio";
 import BaseModal from "@/base/components/BaseModal";
+import { useGetAudioDetail } from "../home/hooks/useGetAudioTranscription";
 
 interface UploadAudioProps {
   isOpen: boolean;
@@ -12,8 +13,9 @@ interface UploadAudioProps {
 
 export default function TranscriptionModal(props: UploadAudioProps) {
   const { isOpen = false, onClose, data } = props;
-  const { data: transcriptions, isLoading } = useGetAudioDetail(data?.id || "");
-  console.log(data?.title);
+  // const { data: transcriptions, isLoading } = useGetAudioDetail(data?.id || "");
+  const id = data?.id || "";
+  const { data: dataTranscription, isLoading } = useGetAudioDetail(id);
   return (
     <BaseModal
       modalTitle={data?.title}
@@ -32,7 +34,7 @@ export default function TranscriptionModal(props: UploadAudioProps) {
             overflowY: "auto",
           }}
         >
-          {isLoading ? "Loading..." : transcriptions?.transcript}
+          {isLoading ? "Loading..." : dataTranscription?.transcript}
         </Typography>
         <Flex vertical style={{ padding: "0 20px 20px 20px" }}>
           <audio controls style={{ width: "100%", marginTop: 10 }}>
