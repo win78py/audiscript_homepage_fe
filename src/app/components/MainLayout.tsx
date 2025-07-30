@@ -14,6 +14,7 @@ import { usePathname } from 'next/navigation';
 import useDevice from '@/base/hooks/useDevice';
 // import ClientProviders from './AppBar/ClientProviders';
 import { LoadingOutlined } from '@ant-design/icons';
+import MyAppBar from './AppBar';
 // import SessionExpireChecker from './AppBar/SessionExpireChecker';
 
 interface MainLayoutProps {
@@ -42,7 +43,7 @@ const MainLayout = (props: MainLayoutProps) => {
                 <Suspense fallback={<Spin indicator={<LoadingOutlined style={{ color: '#692AFA' }} spin />} size="large" />}>
                   {(isDesktop !== undefined || isTablet !== undefined || isMobile !== undefined) && (
                     <>
-                      {/* <MyAppBar /> */}
+                      <MyAppBar />
                       {/* <SessionExpireChecker /> */}
                       <Flex style={{ width: '100%', height: `calc(100% - ${APP_BAR_HEIGHT}px)` }}>
                         <Flex vertical style={{ height: '100%', width: '100%', overflowX: 'hidden' }} className="scroll-box">

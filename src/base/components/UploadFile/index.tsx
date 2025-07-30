@@ -195,7 +195,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
               <div>
                 <Button
                   style={{
-                    background: "#1677ff",
+                    background: "var(--primary-fg-color-primary-fg-50, #1677ff)",
                     color: "#fff",
                     borderRadius: 12,
                     height: 52,
