@@ -42,8 +42,10 @@ export default function LoginPage() {
         ...formData,
         // socketId: !!socket ? socket.id : undefined,
       });
-      console.log("Login response:", res?.data);
+      console.log("Login response:", res?.success, res?.data?.customer);
+      
       if (res?.success && res?.data?.customer) {
+        console.log("Login successful:", res);
         const url = "/";
         let ans;
 
@@ -93,6 +95,7 @@ export default function LoginPage() {
 
 
         const result = await loginSuccess(res?.data);
+        console.log("Login success result:", result);
         if (result) {
           showToast({
             content: "You have successfully logged in.",
@@ -125,8 +128,9 @@ export default function LoginPage() {
           // } else {
           //   handleRemoveLocalStore();
           // }
+          console.log("Login successful");
+
           router.push(url);
-          console.log("Login successful:", res, url);
         }
       } else {
         setError(true);

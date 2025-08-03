@@ -7,6 +7,7 @@ export type AuthProps = {
 };
 export type CustomerInfo = {
   email?: string[];
+  profileImage?: string;
   name?: string;
   id?: number;
   refreshToken?: string;

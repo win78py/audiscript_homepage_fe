@@ -17,7 +17,6 @@ import authServices from "../services/authServices";
 const useUserActions = () => {
   const [loadingApp, setLoadingApp] = useState(false);
   const [authData, setAuthAtom] = useRecoilState(authAtom);
-  console.log('AuthProvider rendered')
   const resetSignature = useResetRecoilState(appSignatureAtom);
   const showToast = useToast();
   const [cookies] = useState(getCookie(COOKIE_KEY_CUSTOMER));
@@ -44,7 +43,7 @@ const useUserActions = () => {
       customer: null,
     });
     resetSignature();
-    window.location.reload();
+    // window.location.reload();
     // if (res?.success) {
     // }
   };

@@ -467,7 +467,7 @@ export default function RegisterPage() {
         </Form>
 
         <Flex style={{ justifyContent: "center", marginTop: 16 }}>
-          <Link href="#" style={{ fontWeight: 600, marginLeft: 4 }}>
+          <Link href="/login" style={{ fontWeight: 600, marginLeft: 4 }}>
             <Typography>Back to login</Typography>
           </Link>
         </Flex>

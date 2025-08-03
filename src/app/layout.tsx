@@ -29,7 +29,9 @@ export default function RootLayout({
           <style>{typoConfig}</style>
           <AntdRegistry>
             <ConfigProvider theme={mainLayoutAntdConfig}>
+              <App>
                 <MainLayout>{children}</MainLayout>
+              </App>
             </ConfigProvider>
           </AntdRegistry>
           <script

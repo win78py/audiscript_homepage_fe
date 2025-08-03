@@ -30,8 +30,8 @@ const MainLayout = (props: MainLayoutProps) => {
     <QueryClientProvider client={queryClient}>
       <div style={{ position: 'relative', height: '100vh', width: '100%' }}>
         <RecoilRoot>
-          {/* <ClientProviders> */}
-            {/* <AuthProvider> */}
+          <ClientProviders>
+            <AuthProvider>
               {isExcluded ? (
                 <Suspense fallback={<Spin indicator={<LoadingOutlined style={{ color: '#692AFA' }} spin />} size="large" />}>
                   {children}
@@ -53,8 +53,8 @@ const MainLayout = (props: MainLayoutProps) => {
                   )}
                 </Suspense>
               )}
-            {/* </AuthProvider> */}
-          {/* </ClientProviders> */}
+            </AuthProvider>
+          </ClientProviders>
         </RecoilRoot>
       </div>
     </QueryClientProvider>
