@@ -21,7 +21,7 @@ const authServices = {
     }
   },
   logout: async (token: string) => {
-    let config: AxiosRequestConfig<any> = {
+    const config: AxiosRequestConfig<any> = {
       method: 'POST',
       url: '/auth/logout',
       headers: {

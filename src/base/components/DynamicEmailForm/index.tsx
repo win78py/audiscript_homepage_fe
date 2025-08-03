@@ -117,7 +117,7 @@ const EmailRowItem = ({
     } else {
       // setAlternativeSelect('');
     }
-  }, [value]);
+  }, [value, emailAlternative]);
 
   const handleChangeSelect = (newValue: string) => {
     setAlternativeSelect(newValue);

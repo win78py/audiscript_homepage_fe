@@ -39,7 +39,7 @@ export const AuthProvider = ({
       }
     };
     checkSignUp();
-  }, [auth]);
+  }, [userCookie, userActions, setAuth, pathname]);
 
   useEffect(() => {
     const checkIsLoggedIn = () => {

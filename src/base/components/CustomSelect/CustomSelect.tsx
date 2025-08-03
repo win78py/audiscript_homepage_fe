@@ -73,5 +73,5 @@ const CustomSelect = forwardRef<HTMLDivElement, CustomSelectProps>(
     );
   }
 );
-
+CustomSelect.displayName = "CustomSelect";
 export default CustomSelect;

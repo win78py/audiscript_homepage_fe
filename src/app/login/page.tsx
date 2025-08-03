@@ -44,7 +44,7 @@ export default function LoginPage() {
       });
       console.log("Login response:", res?.data);
       if (res?.success && res?.data?.customer) {
-        let url = "/";
+        const url = "/";
         let ans;
 
         // if (res?.data?.daysPassed >= 90) {
