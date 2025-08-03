@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { mainLayoutAntdConfig } from "@/base/configs/antdConfig";
 import "./globals.css";
-import { ConfigProvider } from "antd";
+import { App, ConfigProvider } from "antd";
 import MainLayout from "./components/MainLayout";
 import { typoConfig } from "@/base/configs/typographyConfig";
 
@@ -26,15 +26,15 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <style>{typoConfig}</style>
-        <AntdRegistry>
-          <ConfigProvider theme={mainLayoutAntdConfig}>
-            <MainLayout>{children}</MainLayout>
-          </ConfigProvider>
-        </AntdRegistry>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
+          <style>{typoConfig}</style>
+          <AntdRegistry>
+            <ConfigProvider theme={mainLayoutAntdConfig}>
+                <MainLayout>{children}</MainLayout>
+            </ConfigProvider>
+          </AntdRegistry>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
               if (typeof window !== "undefined") {
                 let prevPath = '';
                 const observer = new MutationObserver(() => {
@@ -47,15 +47,16 @@ export default function RootLayout({
                 observer.observe(document.body, { childList: true, subtree: true });
               }
             `,
-          }}
-        />
-        <script
-          src="/js/toss-standard.js"
-          integrity="sha512-KaYrXKRxVwybCvWeTiOYPOWHUUjn7LcvR2cTRhuzUzMar314sGv4YX5NqugZaj5lRN5ulzCk+j52ew+CD6ZMLA=="
-          crossOrigin="anonymous"
-          defer
-        ></script>
-        {/* <script src="https://js.tosspayments.com/v2/standard"></script> */}
+            }}
+          />
+          {/* <script
+            src="/js/toss-standard.js"
+            integrity="sha512-KaYrXKRxVwybCvWeTiOYPOWHUUjn7LcvR2cTRhuzUzMar314sGv4YX5NqugZaj5lRN5ulzCk+j52ew+CD6ZMLA=="
+            crossOrigin="anonymous"
+            defer
+          ></script>
+          <script src="https://js.tosspayments.com/v2/standard"></script> */}
+        
       </body>
     </html>
   );

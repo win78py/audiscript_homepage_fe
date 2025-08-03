@@ -4,8 +4,20 @@ import BrandLogo from "../BrandLogo";
 import Link from "next/link";
 import Button from "@/base/components/Button/CustomButton";
 import Container from "@/base/components/Container";
+import { useRouter } from "next/navigation";
+import { useRecoilState } from "recoil";
+import { authAtom } from "@/base/store/atoms/auth";
 
 export default function MyAppBar() {
+  const router = useRouter();
+  // const [authData] = useRecoilState(authAtom);
+  // console.log("authData", authData);
+  const handleLoginClick = () => {
+    router.push("/login");
+  };
+  const handleRegisterClick = () => {
+    router.push("/register");
+  };
   return (
     <div
       style={{
@@ -65,6 +77,7 @@ export default function MyAppBar() {
                   height: 38,
                   padding: "10px 28px",
                 }}
+                onClick={handleLoginClick}
               >
                 Login
               </Button>
@@ -78,6 +91,7 @@ export default function MyAppBar() {
                   height: 38,
                   padding: "10px 28px",
                 }}
+                onClick={handleRegisterClick}
               >
                 Sign Up
               </Button>

@@ -2,19 +2,16 @@
 import { ReactNode, Suspense } from 'react';
 
 import { APP_BAR_HEIGHT } from '@/base/configs/config';
-// import Footer from './Footer';
-// import MyAppBar from './AppBar';
-// import VirtualCheckingIsScroll from './VirtualCheckingIsScroll';
 import { Flex, Spin } from 'antd';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/base/configs/queryClient';
 import { RecoilRoot } from 'recoil';
-// import { AuthProvider } from '@/base/contexts/AuthContext';
 import { usePathname } from 'next/navigation';
 import useDevice from '@/base/hooks/useDevice';
-// import ClientProviders from './AppBar/ClientProviders';
 import { LoadingOutlined } from '@ant-design/icons';
 import MyAppBar from './AppBar';
+import { AuthProvider } from '@/base/contexts/AuthContext';
+import ClientProviders from './AppBar/ClientProviders';
 // import SessionExpireChecker from './AppBar/SessionExpireChecker';
 
 interface MainLayoutProps {

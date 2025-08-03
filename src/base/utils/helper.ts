@@ -242,14 +242,14 @@
 //   return uuid;
 // };
 
-// export const isValidJSON = (str: string): boolean => {
-//   try {
-//     JSON.parse(str);
-//   } catch (e) {
-//     return false;
-//   }
-//   return true;
-// };
+export const isValidJSON = (str: string): boolean => {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+};
 
 // export const parseToJSONArray = (str: string): any[] => {
 //   if (isValidJSON(str)) {

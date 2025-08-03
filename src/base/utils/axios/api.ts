@@ -1,5 +1,6 @@
+'use client';
 import { API_URL } from '@/base/configs';
-// import useUserActions from '@/base/hooks/useUserActions';
+import useUserActions from '@/base/hooks/useUserActions';
 // import { authAtom } from '@/base/store/atoms/auth';
 import { Modal } from 'antd';
 import axios, { AxiosRequestConfig, AxiosResponse, ResponseType } from 'axios';
@@ -23,8 +24,9 @@ export const axiosApi = axios.create({
   // withCredentials: true
 });
 
+
 export const useAxiosInterceptors = () => {
-//   const { logout, checkRefreshToken: refreshAccessToken, setNewAccessToken } = useUserActions();
+  const { logout, checkRefreshToken: refreshAccessToken, setNewAccessToken } = useUserActions();
 //   const authData = useRecoilValue(authAtom);
 
 //   const tokenRef = useRef<string | null>(authData?.customer?.accessToken || null);

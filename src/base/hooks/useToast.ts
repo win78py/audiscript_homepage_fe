@@ -1,5 +1,4 @@
-// useToast.ts
-import { message } from 'antd';
+import { App } from 'antd';
 
 type MessageType = 'success' | 'error' | 'info' | 'warning' | 'loading';
 
@@ -11,25 +10,33 @@ interface ToastOptions {
 }
 
 const useToast = () => {
-  const showToast = ({ content, duration = 3, type = 'info', onClose = () => {} }: ToastOptions) => {
+  const { message } = App.useApp();
+
+  const showToast = ({
+    content,
+    duration = 3,
+    type = 'info',
+    onClose,
+  }: ToastOptions) => {
+    const options = { content, duration, onClose };
     switch (type) {
       case 'success':
-        message.success(content, duration, onClose);
+        message.success(options);
         break;
       case 'error':
-        message.error(content, duration, onClose);
+        message.error(options);
         break;
       case 'info':
-        message.info(content, duration, onClose);
+        message.info(options);
         break;
       case 'warning':
-        message.warning(content, duration, onClose);
+        message.warning(options);
         break;
       case 'loading':
-        message.loading(content, duration, onClose);
+        message.loading(options);
         break;
       default:
-        message.info(content, duration, onClose);
+        message.info(options);
         break;
     }
   };

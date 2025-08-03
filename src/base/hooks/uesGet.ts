@@ -1,3 +1,4 @@
+"use client";
 import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { isArray } from 'lodash';
 import { axiosGet } from '../utils/axios/api';

@@ -1,0 +1,22 @@
+.vertical-form-item .ant-form-item-row {
+  gap: 8px;
+}
+
+.vertical-form-item .ant-form-item-label {
+  padding: 0px !important;
+  height: 18px !important;
+  line-height: unset;
+  display: flex;
+  align-items: center;
+}
+
+.vertical-form-item .ant-form-item-no-colon {
+  height: 18px !important;
+  line-height: unset;
+}
+.ant-form-item .ant-form-item-label > label::after {
+  content: none !important;
+}
+.ant-form-item-required::before {
+  display: none !important;
+}

@@ -14,7 +14,7 @@ const ArtallLogoIcon: React.FC<ArtallLogoIconProps> = (props) => (
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 11764 2917"
     width={props.width || "100%"}
-    height={props.height || "auto"}
+    height={props.height || "100%"}
     preserveAspectRatio="xMidYMid meet"
     {...props}
   >
