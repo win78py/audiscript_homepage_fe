@@ -1,10 +1,10 @@
 export const LIST_TABLE_PAGE_SIZE = 20;
-export const HOST_CLIENT = process.env.NEXT_PUBLIC_CLIENT_BASE_URL;
-export const HOST_CLIENT_TEST = process.env.NEXT_PUBLIC_CLIENT_TEST_URL;
-export const URL =
-  process.env.NODE_ENV === "development"
-    ? `${HOST_CLIENT_TEST}/`
-    : `${HOST_CLIENT}/`;
+// export const HOST_CLIENT = process.env.NEXT_PUBLIC_CLIENT_BASE_URL;
+// export const HOST_CLIENT_TEST = process.env.NEXT_PUBLIC_CLIENT_TEST_URL;
+// export const URL =
+//   process.env.NODE_ENV === "development"
+//     ? `${HOST_CLIENT_TEST}/`
+//     : `${HOST_CLIENT}/`;
 
 const HOST_SERVER = process.env.NEXT_PUBLIC_BASE_URL;
 const HOST_TEST = process.env.NEXT_PUBLIC_TEST_URL;
