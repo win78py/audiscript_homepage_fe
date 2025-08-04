@@ -14,7 +14,7 @@ export default function MyAppBar() {
   const router = useRouter();
   const showToast = useToast();
   const [authData] = useRecoilState(authAtom);
-  console.log("authData", authData?.isLoggedIn);
+
   const { logout } = useUserActions();
   const handleLoginClick = () => {
     router.push("/login");
@@ -81,7 +81,7 @@ export default function MyAppBar() {
             <Flex style={{ gap: 8 }}>
               {authData.isLoggedIn ? (
                 <Flex style={{ alignItems: "center", gap: 16 }}>
-                  <Link href={`/profile?id=${authData.customer?.id}`} style={{ color: "var(--black, #101010)" }}>
+                  <Link href={`/workspace?id=${authData.customer?.id}`} style={{ color: "var(--black, #101010)" }}>
                     <Avatar size={38} src={authData.customer?.profileImage} />
                   </Link>    
                   <Button

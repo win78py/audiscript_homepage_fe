@@ -14,6 +14,8 @@ import CheckCircleIcon from "@/base/icons/CheckCircleIcon";
 import TranscriptionModal from "@/app/components/TransriptionModal";
 import useToast from "@/base/hooks/useToast";
 import { useAudioMutation } from "@/app/components/home/hooks/useAudioMutation";
+import { useRecoilState } from "recoil";
+import { authAtom } from "@/base/store/atoms/auth";
 
 interface UploadAudioProps {
   onAudioSelected: (files: File[]) => void;
@@ -48,6 +50,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
   const [progressRunning, setProgressRunning] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [isOpen, setIsOpen] = React.useState(mCreateAudio?.isSuccess);
+  const [authData] = useRecoilState(authAtom);
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -114,10 +117,12 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
   setFile(firstFile);
 
   const file = firstFile.originFileObj as RcFile;
-
+  const userId = authData?.customer?.id;
   // Tạo FormData
   const formData = new FormData();
   formData.append("file_url", file);
+  formData.append("user_id", String(userId));
+  console.log("user_id:", userId);
 
 
   // Gọi mutation và truyền option isFormData: true
@@ -341,7 +346,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
       <TranscriptionModal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        data={mCreateAudio?.data}
+        id={mCreateAudio?.data?.id}
       />
     </Flex>
   );

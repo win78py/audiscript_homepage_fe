@@ -8,17 +8,17 @@ import { useGetAudioDetail } from "../home/hooks/useGetAudioTranscription";
 interface UploadAudioProps {
   isOpen: boolean;
   onClose?: () => void;
-  data?: any;
+  id?: any;
 }
 
 export default function TranscriptionModal(props: UploadAudioProps) {
-  const { isOpen = false, onClose, data } = props;
+  const { isOpen = false, onClose, id } = props;
   // const { data: transcriptions, isLoading } = useGetAudioDetail(data?.id || "");
-  const id = data?.id || "";
+  // console.log("TranscriptionModal data:", data);
   const { data: dataTranscription, isLoading } = useGetAudioDetail(id);
   return (
     <BaseModal
-      modalTitle={data?.title}
+      modalTitle={dataTranscription?.title}
       open={isOpen}
       onClose={() => {
         onClose && onClose();
@@ -38,7 +38,7 @@ export default function TranscriptionModal(props: UploadAudioProps) {
         </Typography>
         <Flex vertical style={{ padding: "0 20px 20px 20px" }}>
           <audio controls style={{ width: "100%", marginTop: 10 }}>
-            <source src={data?.file_url} type="audio/mpeg" />
+            <source src={dataTranscription?.file_url} type="audio/mpeg" />
             Your browser does not support the audio element.
           </audio>
         </Flex>
