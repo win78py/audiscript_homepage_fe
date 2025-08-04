@@ -3,6 +3,7 @@ import { CSSProperties, forwardRef, useState } from 'react';
 
 import { ConfigProvider, Flex, Select, SelectProps } from 'antd';
 import IconChevronDown from '@/base/icons/IconChevronDown';
+import './style.css';
 
 
 export interface CustomSelectProps extends SelectProps {
@@ -55,7 +56,8 @@ const CustomSelect = forwardRef<HTMLDivElement, CustomSelectProps>(
       >
         <Flex align="center" gap={suffixGap} style={{ ...containerStyle }}>
           <Select
-            style={{ flex: 1, height: props.size === 'large' ? 52 : props?.customStyle?.height ?? undefined, ...customStyle }}
+            className='custom-select'
+            style={{ flex: 1, height: props.size === 'large' ? 52 : props?.customStyle?.height ?? undefined, ...customStyle  }}
             suffixIcon={<IconChevronDown style={{ fontSize: props.size === 'small' ? 12 : 16, pointerEvents: 'none' }} />}
             {...props}
             onChange={(value, option) => {

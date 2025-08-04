@@ -12,11 +12,26 @@ import InputOnlyAlphaNumeric from "@/base/components/InputOnlyAlphaNumeric";
 export default function Workspace() {
   dayjs.extend(relativeTime);
   const [authData] = useRecoilState(authAtom);
+
+  // Pagination state
+  const [page, setPage] = React.useState(1);
+  const [pageSize, setPageSize] = React.useState(5);
+  console.log("pageSize:", pageSize);
   const params = {
     user_id: authData?.customer?.id || "",
-    limit: 5,
+    limit: pageSize,
+    page,
   };
+
   const { data: audio } = useGetAudio(params);
+
+  const pagination = {
+    current: audio?.metadata?.currentPage || page,
+    pageSize: audio?.metadata?.pageSize || pageSize,
+    total: audio?.metadata?.totalRecords || 0,
+    showSizeChanger: true,
+    pageSizeOptions: [5, 10, 20, 50],
+  };
 
   const [isOpen, setIsOpen] = React.useState(false);
   const [selectedAudioId, setSelectedAudioId] = React.useState<string | null>(
@@ -67,6 +82,22 @@ export default function Workspace() {
       title: "Language",
       dataIndex: "language",
       key: "language",
+      render: (language: string) =>
+      (
+        <div style={{ display: language ? "flex" : "none", gap: 5, flexWrap: "wrap" }}>
+              <Typography
+                style={{
+                  border: "1px solid #d9d9d9",
+                  borderRadius: 7,
+                  padding: "2px 8px",
+                  fontSize: 14,
+                  background: "#fafafa",
+                }}
+              >
+               {language?.toUpperCase()}
+              </Typography>
+          </div>
+      ),
       sorter: (a, b) => a.language.localeCompare(b.language),
     },
     {
@@ -128,13 +159,9 @@ export default function Workspace() {
     },
   ];
 
-  const onChange: TableProps<DataType>["onChange"] = (
-    pagination,
-    filters,
-    sorter,
-    extra
-  ) => {
-    console.log("params", pagination, filters, sorter, extra);
+  const handleTableChange: TableProps<DataType>["onChange"] = (pagination) => {
+    setPage(pagination.current || 1);
+    setPageSize(pagination.pageSize || 10);
   };
 
   const handleOpenTranscriptionModal = (id: string) => {
@@ -159,9 +186,11 @@ export default function Workspace() {
       <Table<DataType>
         columns={columns}
         dataSource={audio?.data}
-        onChange={onChange}
-        rowKey="key"
+        onChange={handleTableChange}
+        pagination={pagination}
+        rowKey="id"
         style={{ width: "100%", overflowX: "auto" }}
+        scroll={{ y: 500 }} 
         onRow={(record) => ({
           onMouseEnter: () => setHoveredRowId(record.id),
           onMouseLeave: () => setHoveredRowId(null),

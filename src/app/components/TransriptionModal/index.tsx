@@ -15,7 +15,10 @@ export default function TranscriptionModal(props: UploadAudioProps) {
   const { isOpen = false, onClose, id } = props;
   // const { data: transcriptions, isLoading } = useGetAudioDetail(data?.id || "");
   // console.log("TranscriptionModal data:", data);
-  const { data: dataTranscription, isLoading } = useGetAudioDetail(id);
+  const { data: dataTranscription, isLoading } = useGetAudioDetail(id, {
+    enabled: !!id && isOpen,
+  });
+  console.log("TranscriptionModal file_url:", dataTranscription?.file_url);
   return (
     <BaseModal
       modalTitle={dataTranscription?.title}
@@ -37,10 +40,12 @@ export default function TranscriptionModal(props: UploadAudioProps) {
           {isLoading ? "Loading..." : dataTranscription?.transcript}
         </Typography>
         <Flex vertical style={{ padding: "0 20px 20px 20px" }}>
-          <audio controls style={{ width: "100%", marginTop: 10 }}>
-            <source src={dataTranscription?.file_url} type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
+          {dataTranscription?.file_url && (
+            <audio controls style={{ width: "100%", marginTop: 10 }}>
+              <source src={dataTranscription.file_url} type="audio/mpeg" />
+              Your browser does not support the audio element.
+            </audio>
+          )}
         </Flex>
       </Flex>
     </BaseModal>

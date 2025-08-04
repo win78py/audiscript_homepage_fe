@@ -16,6 +16,11 @@ import useToast from "@/base/hooks/useToast";
 import { useAudioMutation } from "@/app/components/home/hooks/useAudioMutation";
 import { useRecoilState } from "recoil";
 import { authAtom } from "@/base/store/atoms/auth";
+import CustomSelect from "../CustomSelect/CustomSelect";
+import { LANGUAGE_OPTIONS } from "@/base/configs/language";
+import { queryClient } from "@/base/configs/queryClient";
+import { queryKeys } from "@/app/workspace/configs/queryKeys";
+import { keyStringify } from "@/base/utils/helper/schema";
 
 interface UploadAudioProps {
   onAudioSelected: (files: File[]) => void;
@@ -23,10 +28,7 @@ interface UploadAudioProps {
   style?: React.CSSProperties;
 }
 
-const UploadAudio: React.FC<UploadAudioProps> = ({
-  uploadKey,
-  style,
-}) => {
+const UploadAudio: React.FC<UploadAudioProps> = ({ uploadKey, style }) => {
   const showToast = useToast();
   const [file, setFile] = useState<AntdUploadFile>();
   // const { mutate, isPending, isSuccess } = useCreateAudio({
@@ -45,12 +47,17 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
   //     });
   //   },
   // });
-  const { mCreateAudio } = useAudioMutation();
+  const { mCreateAudio, mTranscribeAudio } = useAudioMutation();
+  console.log("mCreateAudio:", mCreateAudio);
+  console.log("mTranscribeAudio:", mTranscribeAudio?.isPending);
   const [progressPercent, setProgressPercent] = useState(0);
   const [progressRunning, setProgressRunning] = useState(false);
+  console.log("progressRunning:", progressRunning);
   const [isComplete, setIsComplete] = useState(false);
   const [isOpen, setIsOpen] = React.useState(mCreateAudio?.isSuccess);
   const [authData] = useRecoilState(authAtom);
+
+  const [selectedLanguage, setSelectedLanguage] = useState<string | "en">("en");
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -73,13 +80,43 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
         setProgressRunning(false);
         setProgressPercent(0);
         setIsComplete(true);
-      }, 1100);
+      }, 1000);
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
   }, [mCreateAudio?.isPending, mCreateAudio?.isSuccess]);
+
+  React.useEffect(() => {
+    let interval: NodeJS.Timeout | null = null;
+
+    if (mTranscribeAudio?.isPending) {
+      setProgressRunning(true);
+      setProgressPercent(0);
+      interval = setInterval(() => {
+        setProgressPercent((prev) => {
+          if (prev < 80) return prev + 2;
+          return prev;
+        });
+      }, 20);
+    }
+
+    if (mTranscribeAudio?.isSuccess) {
+      if (interval) clearInterval(interval);
+      setProgressPercent(100);
+      setTimeout(() => {
+        setProgressRunning(false);
+        setProgressPercent(0);
+        setIsComplete(true);
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [mTranscribeAudio?.isPending, mTranscribeAudio?.isSuccess]);
+
   const beforeUpload = async (file: RcFile) => {
     const isLt10M = file.size / 1024 / 1024 <= 10;
     const allowedTypes = [
@@ -104,46 +141,83 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
     return false;
   };
 
-  const handleChange = (info: UploadChangeParam<AntdUploadFile<any>>) => {
-  setProgressRunning(true);
-  setProgressPercent(0);
-  setIsComplete(false);
+  const handleUpload = (info: UploadChangeParam<AntdUploadFile<any>>) => {
+    setProgressRunning(true);
+    setProgressPercent(0);
+    setIsComplete(false);
 
-  const firstFile = info.fileList.find((file) => !!file.originFileObj);
-  if (!firstFile) {
-    setFile(undefined);
-    return;
-  }
-  setFile(firstFile);
+    const firstFile = info.fileList.find((file) => !!file.originFileObj);
+    if (!firstFile) {
+      setFile(undefined);
+      return;
+    }
+    setFile(firstFile);
 
-  const file = firstFile.originFileObj as RcFile;
-  const userId = authData?.customer?.id;
-  // Tạo FormData
-  const formData = new FormData();
-  formData.append("file_url", file);
-  formData.append("user_id", String(userId));
-  console.log("user_id:", userId);
+    const file = firstFile.originFileObj as RcFile;
+    const userId = authData?.customer?.id;
+    // Tạo FormData
+    const formData = new FormData();
+    formData.append("file_url", file);
+    formData.append("user_id", String(userId));
 
+    mCreateAudio.mutate(formData, {
+      onSuccess: () => {
+        showToast({
+          content: "Upload successful! Click to transcribe.",
+          type: "success",
+        });
+      },
+      onError: () => {
+        showToast({
+          content: "Upload failed. Please try again.",
+          type: "error",
+        });
+      },
+    });
+  };
 
-  // Gọi mutation và truyền option isFormData: true
-  mCreateAudio.mutate(formData, {
-    onSuccess: () => {
-      showToast({
-        content: "Upload successful! Click to transcribe.",
-        type: "success",
-      });
-    },
-    onError: () => {
-      showToast({
-        content: "Upload failed. Please try again.",
-        type: "error",
-      });
-    },
-  });
-};
+  const handleTranscribe = () => {
+    setProgressRunning(true);
+    setProgressPercent(0);
+    setIsComplete(false);
+    // if (!file) return;
+    const file_url = mCreateAudio?.data?.file_url; // hoặc file.response?.url nếu upload lên cloud
+    const language = selectedLanguage;
+    const audio_id = mCreateAudio?.data?.id;
+
+    if (!file_url || !language || !audio_id) {
+      showToast({ content: "Missing data for transcription.", type: "error" });
+      return;
+    }
+
+    const body = {
+      file_url,
+      language,
+      audio_id,
+    };
+    const params = {
+
+    };
+
+    mTranscribeAudio.mutate(body, {
+      onSuccess: () => {
+        // queryClient.invalidateQueries({ queryKey: [queryKeys.getAudioList] });
+        showToast({
+          content: "Transcription started!",
+          type: "success",
+        });
+      },
+      onError: () => {
+        showToast({
+          content: "Transcription failed. Please try again.",
+          type: "error",
+        });
+      },
+    });
+  };
 
   const handleOpenTranscriptionModal = () => {
-    if (!mCreateAudio?.isSuccess) return;
+    if (!mTranscribeAudio?.isSuccess) return;
     setIsOpen(true);
   };
 
@@ -166,7 +240,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
           accept=".mp3,.wav,.m4a"
           showUploadList={false}
           beforeUpload={beforeUpload}
-          onChange={handleChange}
+          onChange={handleUpload}
           style={{
             display: "flex",
             width: "100%",
@@ -200,7 +274,8 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
               <div>
                 <Button
                   style={{
-                    background: "var(--primary-fg-color-primary-fg-50, #1677ff)",
+                    background:
+                      "var(--primary-fg-color-primary-fg-50, #1677ff)",
                     color: "#fff",
                     borderRadius: 12,
                     height: 52,
@@ -287,6 +362,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     setFile(undefined);
+                    mTranscribeAudio.reset();
                   }}
                   style={{
                     border: "1px solid #cdcdcdff",
@@ -300,6 +376,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
                   <DeleteIcon width={24} height={25.5} />
                 </div>
               </Flex>
+
               {progressRunning && (
                 <Progress
                   percent={progressPercent}
@@ -310,8 +387,60 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
                 />
               )}
 
-              {mCreateAudio?.isSuccess && !progressRunning && (
-                <div
+              {mCreateAudio?.isSuccess &&
+                !progressRunning &&
+                !mTranscribeAudio?.isSuccess && (
+                  <Flex
+                    vertical
+                    onClick={(e) => {
+                      e.stopPropagation();
+                    }}
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      marginTop: 24,
+                      pointerEvents: "auto",
+                      gap: 38,
+                    }}
+                  >
+                    <Flex vertical gap={8} style={{ width: "100%" }}>
+                      <Typography style={{ textAlign: "left" }}>
+                        Select transcription language
+                      </Typography>
+                      <CustomSelect
+                        style={{
+                          width: "100%",
+                          height: 52,
+                          textAlign: "left",
+                          borderRadius: 12,
+                        }}
+                        value={selectedLanguage}
+                        onChange={(value) => setSelectedLanguage(value)}
+                        placeholder="Auto select"
+                        options={LANGUAGE_OPTIONS}
+                      />
+                    </Flex>
+                    <Button
+                      style={{
+                        background: "#1677ff",
+                        color: "#fff",
+                        borderRadius: 12,
+                        height: 48,
+                        width: "100%",
+                        padding: "0 32px",
+                        fontWeight: 600,
+                      }}
+                      onClick={() => handleTranscribe()}
+                    >
+                      Transcribe
+                    </Button>
+                  </Flex>
+                )}
+
+              {mTranscribeAudio?.isSuccess && !progressRunning && (
+                <Flex
+                  vertical
                   onClick={(e) => {
                     e.stopPropagation();
                   }}
@@ -321,6 +450,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
                     justifyContent: "flex-end",
                     marginTop: 24,
                     pointerEvents: "auto",
+                    gap: 38,
                   }}
                 >
                   <Button
@@ -335,19 +465,21 @@ const UploadAudio: React.FC<UploadAudioProps> = ({
                     }}
                     onClick={() => handleOpenTranscriptionModal()}
                   >
-                    View Transcription
+                    View transcription
                   </Button>
-                </div>
+                </Flex>
               )}
             </Flex>
           )}
         </Upload.Dragger>
       </div>
-      <TranscriptionModal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        id={mCreateAudio?.data?.id}
-      />
+      {isOpen && (
+        <TranscriptionModal
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
+          id={mCreateAudio?.data?.id}
+        />
+      )}
     </Flex>
   );
 };

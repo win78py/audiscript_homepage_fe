@@ -177,7 +177,7 @@ export async function axiosAPI<T>(
     return response?.data;
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 }
 
@@ -202,7 +202,7 @@ export async function axiosGet<T>(
     return response?.data;
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 }
 
@@ -230,7 +230,7 @@ export async function axiosPost<T>(
     return response?.data;
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 }
 
@@ -257,7 +257,7 @@ export async function axiosDel<T>(
     return response?.data;
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 }
 
@@ -284,7 +284,7 @@ export async function axiosPut<T>(
     return response?.data;
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 }
 
@@ -308,6 +308,6 @@ export async function axiosPatch<T>(
     return response?.data;
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 }
