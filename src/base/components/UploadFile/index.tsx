@@ -238,7 +238,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({ uploadKey, style }) => {
           key={uploadKey}
           name="audio"
           fileList={file ? [file] : []}
-          accept=".mp3,.wav,.m4a"
+          accept=".mp3,.wav,.m4a,.mp4"
           showUploadList={false}
           beforeUpload={beforeUpload}
           onChange={handleUpload}
