@@ -13,7 +13,10 @@ const Header = (props: HeaderProps) => {
     <Flex vertical={vertical} style={style}>
       <Typography style={titleStyle}>Audio to text converter</Typography>
       <Typography style={descriptionStyle}>
-        Transcribe audio to text with AudisScribe's AI transcription tool.
+        Transcribe audio to text with Audiscript's AI transcription tool.
+      </Typography>
+      <Typography style={descriptionStyle}>
+        Note: The conversion time will be longer if the language you select is different from the language of the audio file.
       </Typography>
     </Flex>
   );

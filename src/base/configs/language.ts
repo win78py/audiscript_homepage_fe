@@ -5,7 +5,7 @@ export const LANGUAGE_OPTIONS = [
   // { value: "es", label: "Spanish (Spain)" },
   { value: "ja", label: "Japanese (Japan)" },
   { value: "ko", label: "Korean (South Korea)" },
-  { value: "zh-CN", label: "Chinese (Simplified, China)" },
+  { value: "zh", label: "Chinese (China)" },
   // { value: "zh-TW", label: "Chinese (Traditional, Taiwan)" },
   // { value: "de", label: "German (Germany)" },
   { value: "auto", label: "Auto select" },

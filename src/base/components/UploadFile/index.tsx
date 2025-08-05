@@ -57,7 +57,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({ uploadKey, style }) => {
   const [isOpen, setIsOpen] = React.useState(mCreateAudio?.isSuccess);
   const [authData] = useRecoilState(authAtom);
 
-  const [selectedLanguage, setSelectedLanguage] = useState<string | "en">("en");
+  const [selectedLanguage, setSelectedLanguage] = useState<string | "auto">("auto");
 
   React.useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
