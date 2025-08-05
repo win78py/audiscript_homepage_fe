@@ -126,6 +126,7 @@ const UploadAudio: React.FC<UploadAudioProps> = ({ uploadKey, style }) => {
       "audio/mp4",
       "audio/m4a",
       "audio/x-m4a",
+      "video/mp4",
     ];
 
     if (!allowedTypes.includes(file.type)) {
