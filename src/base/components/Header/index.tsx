@@ -15,7 +15,7 @@ const Header = (props: HeaderProps) => {
       <Typography style={descriptionStyle}>
         Transcribe audio to text with Audiscript's AI transcription tool.
       </Typography>
-      <Typography style={descriptionStyle}>
+      <Typography style={{ fontSize: 14, color: "#666"}}>
         Note: The conversion time will be longer if the language you select is different from the language of the audio file.
       </Typography>
     </Flex>

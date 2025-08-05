@@ -19,9 +19,9 @@ export default function Home() {
     >
       <Header
         vertical={true}
-        style={{ textAlign: "center", gap: 10 }}
-        titleStyle={{ fontSize: "34px", fontWeight: "bold" }}
-        descriptionStyle={{ fontSize: "21px", color: "#666" }}
+        style={{ textAlign: "center", gap: 10, width: "100%" }}
+        titleStyle={{ fontSize: "34px", fontWeight: "bold", width: "100%" }}
+        descriptionStyle={{ fontSize: "21px", color: "#666", width: "100%" }}
       />
       <UploadAudio
         onAudioSelected={(files) => console.log(files)}
